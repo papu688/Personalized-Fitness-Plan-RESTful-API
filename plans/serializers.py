@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User
+from .models import User, Workout, WorkoutPlan, NutritionPlan, WorkoutProgress
 
 class CustomUserDetailsSerializer(serializers.ModelSerializer):
     class Meta:
@@ -31,3 +31,25 @@ class CustomUserDetailsSerializer(serializers.ModelSerializer):
 
             instance.save()
             return instance
+
+class WorkoutSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Workout
+        fields = '__all__'
+
+class WorkoutPlanSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WorkoutPlan
+        fields = '__all__'
+
+class NutritionPlanSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NutritionPlan
+        fields = '__all__'
+
+class WorkoutProgressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WorkoutProgress
+        fields = '__all__'
+
+
