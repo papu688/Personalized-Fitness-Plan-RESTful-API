@@ -37,16 +37,21 @@ class WorkoutSerializer(serializers.ModelSerializer):
         model = Workout
         fields = '__all__'
 
-        def validate_name(self, value):
-            if Workout.objects.filter(name=value).exists():
-                raise serializers.ValidationError("A workout with this name already exists")
-            return value
+    def validate_name(self, value):
+        if Workout.objects.filter(name=value).exists():
+            raise serializers.ValidationError("A workout with this name already exists")
+        return value
         
 class WorkoutPlanSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkoutPlan
         fields = '__all__'
 
+    def validate(self, attrs):
+        if attrs['start_date'] > attrs['end_date']:
+            raise serializers.ValidationError("The start date cannot be later than the end date.")
+        return attrs
+        
 class NutritionPlanSerializer(serializers.ModelSerializer):
     class Meta:
         model = NutritionPlan
