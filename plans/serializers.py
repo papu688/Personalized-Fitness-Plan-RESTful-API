@@ -37,6 +37,11 @@ class WorkoutSerializer(serializers.ModelSerializer):
         model = Workout
         fields = '__all__'
 
+        def validate_name(self, value):
+            if Workout.objects.filter(name=value).exists():
+                raise serializers.ValidationError("A workout with this name already exists")
+            return value
+        
 class WorkoutPlanSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkoutPlan
