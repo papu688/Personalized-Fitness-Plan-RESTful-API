@@ -25,3 +25,5 @@ urlpatterns = [
     path('workout-progress/<int:pk>/', WorkoutProgressDetailAPIView.as_view(), name='workout-progress-detail'),
 ]
 
+#nutrutuinze datenebs ver kitxulobs gaarkvie
+

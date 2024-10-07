@@ -4,74 +4,74 @@ from .serializers import WorkoutSerializer, WorkoutPlanSerializer, NutritionPlan
 
 
 class UserOwnedMixin:
-    """Mixin zur Filterung von Objekten nach dem angemeldeten Benutzer."""
+    """Mixin to filter objects by the logged-in user."""
     def get_queryset(self):
         return super().get_queryset().filter(user=self.request.user)
 
 
 class WorkoutListCreateAPIView(generics.ListCreateAPIView):
-    """View zum Auflisten und Erstellen von Workouts."""
+    """View for listing and creating workouts."""
     queryset = Workout.objects.all()
     serializer_class = WorkoutSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 
 class WorkoutDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
-    """View zum Abrufen, Aktualisieren und Löschen von Workouts."""
+    """View for retrieving, updating, and deleting workouts."""
     queryset = Workout.objects.all()
     serializer_class = WorkoutSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 
 class WorkoutPlanListCreateAPIView(UserOwnedMixin, generics.ListCreateAPIView):
-    """View zum Auflisten und Erstellen von Workout-Plänen."""
+    """View for listing and creating workout plans."""
     queryset = WorkoutPlan.objects.all()
     serializer_class = WorkoutPlanSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
-        """Speichert den Workout-Plan mit dem aktuell angemeldeten Benutzer."""
+        """Saves the workout plan with the currently logged-in user."""
         serializer.save(user=self.request.user)
 
 
 class WorkoutPlanDetailAPIView(UserOwnedMixin, generics.RetrieveUpdateDestroyAPIView):
-    """View zum Abrufen, Aktualisieren und Löschen von Workout-Plänen."""
+    """View for retrieving, updating, and deleting workout plans."""
     queryset = WorkoutPlan.objects.all()
     serializer_class = WorkoutPlanSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class NutritionPlanListCreateAPIView(UserOwnedMixin, generics.ListCreateAPIView):
-    """View zum Auflisten und Erstellen von Ernährungsplänen."""
+    """View for listing and creating nutrition plans."""
     queryset = NutritionPlan.objects.all()
     serializer_class = NutritionPlanSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer):
-        """Speichert den Ernährungsplan mit dem aktuell angemeldeten Benutzer."""
+        """Saves the nutrition plan with the currently logged-in user."""
         serializer.save(user=self.request.user)
 
 
 class NutritionPlanDetailAPIView(UserOwnedMixin, generics.RetrieveUpdateDestroyAPIView):
-    """View zum Abrufen, Aktualisieren und Löschen von Ernährungsplänen."""
+    """View for retrieving, updating, and deleting nutrition plans."""
     queryset = NutritionPlan.objects.all()
     serializer_class = NutritionPlanSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class WorkoutProgressListCreateAPIView(UserOwnedMixin, generics.ListCreateAPIView):
-    """View zum Auflisten und Erstellen von Workout-Fortschritten."""
+    """View for listing and creating workout progress."""
     queryset = WorkoutProgress.objects.all()
     serializer_class = WorkoutProgressSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
-        """Speichert den Workout-Fortschritt mit dem aktuell angemeldeten Benutzer."""
+        """Saves the workout progress with the currently logged-in user."""
         serializer.save(user=self.request.user)
 
 
 class WorkoutProgressDetailAPIView(UserOwnedMixin, generics.RetrieveUpdateDestroyAPIView):
-    """View zum Abrufen, Aktualisieren und Löschen von Workout-Fortschritten."""
+    """View for retrieving, updating, and deleting workout progress."""
     queryset = WorkoutProgress.objects.all()
     serializer_class = WorkoutProgressSerializer
     permission_classes = [permissions.IsAuthenticated]

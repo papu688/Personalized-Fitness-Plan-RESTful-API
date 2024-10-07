@@ -13,9 +13,9 @@ from rest_framework.permissions import AllowAny
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Courier Delivery Service API",
+        title="Personalized-Fitness-Plan-RESTful-API",
         default_version="v1",
-        description = "API for managing courier deliveries",
+        description = "API for custom fitness routines and tracking progress towards fitness goals",
     ),
     public=True,
     permission_classes=(AllowAny,),
