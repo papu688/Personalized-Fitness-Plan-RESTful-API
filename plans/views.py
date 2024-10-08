@@ -1,6 +1,9 @@
 from rest_framework import generics, permissions
 from .models import Workout, WorkoutPlan, NutritionPlan, WorkoutProgress
 from .serializers import WorkoutSerializer, WorkoutPlanSerializer, NutritionPlanSerializer, WorkoutProgressSerializer
+from .filters import WorkoutFilter
+from django_filters.rest_framework import DjangoFilterBackend
+
 from django.core.cache import cache
 from rest_framework.response import Response
 
@@ -18,6 +21,11 @@ class WorkoutListCreateAPIView(generics.ListCreateAPIView):
     queryset = Workout.objects.all()
     serializer_class = WorkoutSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = WorkoutFilter
+    
+    def get_queryset(self):
+        return super().get_queryset().order_by('-id')
 
 
 class WorkoutDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
