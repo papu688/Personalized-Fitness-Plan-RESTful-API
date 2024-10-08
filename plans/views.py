@@ -1,7 +1,8 @@
 from rest_framework import generics, permissions
 from .models import Workout, WorkoutPlan, NutritionPlan, WorkoutProgress
 from .serializers import WorkoutSerializer, WorkoutPlanSerializer, NutritionPlanSerializer, WorkoutProgressSerializer
-
+from django.core.cache import cache
+from rest_framework.response import Response
 
 class UserOwnedMixin:
     """Mixin to filter objects by the logged-in user."""
@@ -36,6 +37,17 @@ class WorkoutPlanListCreateAPIView(UserOwnedMixin, generics.ListCreateAPIView):
         """Saves the workout plan with the currently logged-in user."""
         print('incoming data:', self.request.data)
         serializer.save(user=self.request.user)
+
+    def list(self, request, *args, **kwargs):
+        cache_key = "workout_plans_list"
+        cache_time = 60 * 5
+        data = cache.get(cache_key)
+        if not data:
+            workout_plans = self.get_queryset()
+            data = self.serializer_class(workout_plans, many=True).data
+            cache.set(cache_key, data, cache_time)
+
+        return Response(data)
         
 
 
