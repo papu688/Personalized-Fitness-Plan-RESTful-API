@@ -3,7 +3,7 @@ from .models import Workout, WorkoutPlan, NutritionPlan, WorkoutProgress
 from .serializers import WorkoutSerializer, WorkoutPlanSerializer, NutritionPlanSerializer, WorkoutProgressSerializer
 from .filters import WorkoutFilter
 from django_filters.rest_framework import DjangoFilterBackend
-
+from rest_framework import status
 from django.core.cache import cache
 from rest_framework.response import Response
 
@@ -14,9 +14,19 @@ class UserOwnedMixin:
             return super().get_queryset()
         else:
             return super().get_queryset().filter(user=self.request.user)
+        
+class BatchDeleteMixin:
+    """Mixin to handle batch deletion of objects."""
+    def delete(self, request, *args, **kwargs):
+        ids = request.data.get('ids', [])
+        if not ids:
+            return Response({"detail": "No IDs provided."}, status=status.HTTP_400_BAD_REQUEST)
+
+        deleted, _ = self.get_queryset().filter(id__in=ids).delete()
+        return Response({"detail": f"{deleted} items deleted."}, status=status.HTTP_204_NO_CONTENT)
 
 
-class WorkoutListCreateAPIView(generics.ListCreateAPIView):
+class WorkoutListCreateAPIView(BatchDeleteMixin, generics.ListCreateAPIView):
     """View for listing and creating workouts."""
     queryset = Workout.objects.all()
     serializer_class = WorkoutSerializer
@@ -35,7 +45,7 @@ class WorkoutDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 
-class WorkoutPlanListCreateAPIView(UserOwnedMixin, generics.ListCreateAPIView):
+class WorkoutPlanListCreateAPIView(UserOwnedMixin, BatchDeleteMixin, generics.ListCreateAPIView):
     """View for listing and creating workout plans."""
     queryset = WorkoutPlan.objects.all()
     serializer_class = WorkoutPlanSerializer
@@ -66,7 +76,7 @@ class WorkoutPlanDetailAPIView(UserOwnedMixin, generics.RetrieveUpdateDestroyAPI
     permission_classes = [permissions.IsAuthenticated]
 
 
-class NutritionPlanListCreateAPIView(UserOwnedMixin, generics.ListCreateAPIView):
+class NutritionPlanListCreateAPIView(UserOwnedMixin, BatchDeleteMixin, generics.ListCreateAPIView):
     """View for listing and creating nutrition plans."""
     queryset = NutritionPlan.objects.all()
     serializer_class = NutritionPlanSerializer
@@ -84,7 +94,7 @@ class NutritionPlanDetailAPIView(UserOwnedMixin, generics.RetrieveUpdateDestroyA
     permission_classes = [permissions.IsAuthenticated]
 
 
-class WorkoutProgressListCreateAPIView(UserOwnedMixin, generics.ListCreateAPIView):
+class WorkoutProgressListCreateAPIView(UserOwnedMixin, BatchDeleteMixin, generics.ListCreateAPIView):
     """View for listing and creating workout progress."""
     queryset = WorkoutProgress.objects.all()
     serializer_class = WorkoutProgressSerializer
