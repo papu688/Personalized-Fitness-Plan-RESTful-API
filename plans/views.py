@@ -6,7 +6,10 @@ from .serializers import WorkoutSerializer, WorkoutPlanSerializer, NutritionPlan
 class UserOwnedMixin:
     """Mixin to filter objects by the logged-in user."""
     def get_queryset(self):
-        return super().get_queryset().filter(user=self.request.user)
+        if self.request.user.is_superuser:
+            return super().get_queryset()
+        else:
+            return super().get_queryset().filter(user=self.request.user)
 
 
 class WorkoutListCreateAPIView(generics.ListCreateAPIView):
@@ -31,7 +34,9 @@ class WorkoutPlanListCreateAPIView(UserOwnedMixin, generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         """Saves the workout plan with the currently logged-in user."""
+        print('incoming data:', self.request.data)
         serializer.save(user=self.request.user)
+        
 
 
 class WorkoutPlanDetailAPIView(UserOwnedMixin, generics.RetrieveUpdateDestroyAPIView):
